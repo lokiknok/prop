@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be Mine Forever? ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #7A0016 0%, #FF1744 35%, #FF4D8D 70%, #FFF5F7 100%);
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --rose-glow: 0 0 30px rgba(255, 23, 68, 0.8);
+            --pink-glow: 0 0 30px rgba(255, 77, 141, 0.7);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: #000000; /* Modified text color to black globally */
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Enforce absolute black text on thematic typography overrides */
+        .font-serif-lux { font-family: 'Playfair Display', serif; color: #000000 !important; }
+        .font-handwritten { font-family: 'Caveat', cursive; color: #000000 !important; }
+        h1, h2, h3, p, span, div, button { color: #000000 !important; }
+
+        /* Fullscreen fixed 3D Canvas environment */
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Screen-wide interactive cursor trail space */
+        #cursor-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        /* Custom Loading Screen Overlay */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #7A0016 0%, #FF1744 100%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .beating-heart-loader {
+            font-size: 5rem;
+            animation: pulse-heart 0.8s infinite alternate cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+
+        @keyframes pulse-heart {
+            0% { transform: scale(0.85); filter: drop-shadow(0 0 5px rgba(255,255,255,0.4)); }
+            100% { transform: scale(1.15); filter: drop-shadow(0 0 25px rgba(255,77,141,0.8)); }
+        }
+
+        /* Dynamic background pulse matching a simulated heartbeat */
+        .heartbeat-bg-pulse {
+            animation: ambient-pulse 3s infinite ease-in-out;
+        }
+        @keyframes ambient-pulse {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; filter: saturate(1.1) brightness(1.05); }
+        }
+
+        /* Snap Scrolling Interface Container */
+        .scroll-container {
+            position: relative;
+            z-index: 20;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+        .scroll-container::-webkit-scrollbar { display: none; }
+        .scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            scroll-snap-align: start;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        /* Glassmorphic Luxury Design Language */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45); /* Enhanced contrast opacity for black text visibility */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--rose-glow);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Heart Card Shapes for Reasons */
+        .heart-card {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            background: rgba(255, 255, 255, 0.5); /* Enhanced interior contrast for solid black text */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transform: rotate(-45deg);
+            margin: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .heart-card::before, .heart-card::after {
+            content: "";
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            background: inherit;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .heart-card::before { top: -95px; left: 0; border-bottom: none; }
+        .heart-card::after { left: 95px; top: 0; border-left: none; }
+        .heart-content {
+            transform: rotate(45deg);
+            z-index: 5;
+            text-align: center;
+            padding: 12px;
+        }
+
+        /* Premium Buttons */
+        .btn-premium {
+            background: linear-gradient(45deg, #ffffff, #ffe4ec);
+            border: 2px solid rgba(0, 0, 0, 0.8);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .btn-premium:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: var(--pink-glow);
+            background: linear-gradient(45deg, #ffe4ec, #ffffff);
+        }
+
+        /* Music Floating Control */
+        .music-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="heartbeat-bg-pulse">
+
+    <div id="loader">
+        <div class="beating-heart-loader">❤️</div>
+        <p class="tracking-widest font-serif-lux text-xl italic mt-4" style="color: #ffffff !important;">Creating your love story...</p>
+    </div>
+
+    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+    <div class="music-toggle" onclick="toggleMusic()" title="Toggle Music">
+        <span id="music-icon">🎵</span>
+    </div>
+
+    <div id="three-container"></div>
+    <canvas id="cursor-canvas"></canvas>
+
+    <div class="scroll-container">
+        
+        <section id="welcome">
+            <div class="text-center z-30 max-w-4xl px-4 glass-card p-10 md:p-16">
+                <span class="uppercase tracking-widest text-sm font-semibold mb-4 block opacity-80">Welcome to Our Universe</span>
+                <h1 class="text-4xl md:text-7xl font-serif-lux font-bold mb-6 drop-shadow-md leading-tight">
+                    Every heartbeat of mine<br>
+                    <span class="italic font-normal">whispers your name</span> ❤️
+                </h1>
+            </div>
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-black/70 text-xs tracking-widest uppercase font-bold animate-bounce">
+                Scroll Down to Enter &darr;
+            </div>
+        </section>
+
+        <section id="meeting">
+            <div class="glass-card p-8 md:p-14 max-w-2xl text-center z-30 mx-4">
+                <h2 class="text-2xl md:text-4xl font-serif-lux font-bold mb-4">Our First Meeting</h2>
+                <p class="text-xl md:text-2xl font-handwritten leading-relaxed font-bold">
+                    "The moment I met you, my world became brighter. Every color changed, every ordinary sight found its magic, and I finally understood why everything before you was just waiting."
+                </p>
+            </div>
+        </section>
+
+        <section id="memories" class="flex-col justify-center">
+            <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-12 text-center z-30 drop-shadow-sm">Beautiful Memories</h2>
+            <div class="flex flex-wrap justify-center gap-8 z-30 max-w-6xl w-full px-4">
+                <div class="glass-card p-5 w-72 transform dynamic-tilt group">
+                    <div class="w-full h-48 bg-rose-500/20 rounded-2xl mb-4 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
+                        🌹 <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent"></div>
+                    </div>
+                    <h3 class="font-bold font-serif-lux text-xl mb-1">The First Spark</h3>
+                    <p class="text-sm font-handwritten text-lg font-bold">Where a single smile forever redefined happiness for me.</p>
+                </div>
+                <div class="glass-card p-5 w-72 transform dynamic-tilt group">
+                    <div class="w-full h-48 bg-rose-500/20 rounded-2xl mb-4 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
+                        ✨ <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent"></div>
+                    </div>
+                    <h3 class="font-bold font-serif-lux text-xl mb-1">Endless Conversations</h3>
+                    <p class="text-sm font-handwritten text-lg font-bold">Midnight stories, sharing secrets, and realizing you are home.</p>
+                </div>
+                <div class="glass-card p-5 w-72 transform dynamic-tilt group">
+                    <div class="w-full h-48 bg-rose-500/20 rounded-2xl mb-4 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
+                        💫 <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent"></div>
+                    </div>
+                    <h3 class="font-bold font-serif-lux text-xl mb-1">Our Safe Space</h3>
+                    <p class="text-sm font-handwritten text-lg font-bold">Every laugh shared made me love you a million times more.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="reasons" class="h-auto py-28 flex-col justify-start overflow-visible">
+            <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-28 text-center z-30 sticky top-12">Why I Love You</h2>
+            <div class="flex flex-wrap justify-center max-w-5xl z-30 gap-y-24 gap-x-12 px-4">
+                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your radiant, heartwarming smile</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your infinite kindness to everyone</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your infectious, magical laughter</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your unyielding belief and support</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your beautiful, luminous soul</div></div>
+            </div>
+        </section>
+
+        <section id="timeline" class="flex-col justify-center">
+            <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-16 text-center z-30">Our Timeline</h2>
+            <div class="relative w-full max-w-xl z-30 px-4">
+                <div class="absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-black via-rose-500 to-black shadow-[0_0_8px_rgba(0,0,0,0.3)]"></div>
+                
+                <div class="space-y-10">
+                    <div class="flex items-center justify-between w-full timeline-item">
+                        <div class="w-5/12 text-right pr-4 font-bold">💕 First Meeting</div>
+                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white"></div>
+                        <div class="w-5/12 glass-card p-3 pl-4 text-xs md:text-sm font-medium">Our eyes locked for the very first time.</div>
+                    </div>
+                    <div class="flex items-center justify-between w-full timeline-item">
+                        <div class="w-5/12 glass-card p-3 pr-4 text-right text-xs md:text-sm font-medium order-1 md:order-none">We talked for hours without stopping.</div>
+                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white order-2"></div>
+                        <div class="w-5/12 pl-4 font-bold order-3 md:order-none">💕 First Conversation</div>
+                    </div>
+                    <div class="flex items-center justify-between w-full timeline-item">
+                        <div class="w-5/12 text-right pr-4 font-bold">💕 First Date</div>
+                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white"></div>
+                        <div class="w-5/12 glass-card p-3 pl-4 text-xs md:text-sm font-medium">When I realized you were completely special.</div>
+                    </div>
+                    <div class="flex items-center justify-between w-full timeline-item">
+                        <div class="w-5/12 glass-card p-3 pr-4 text-right text-xs md:text-sm font-medium order-1 md:order-none">Uncontrollable laughter under the stars.</div>
+                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white order-2"></div>
+                        <div class="w-5/12 pl-4 font-bold order-3 md:order-none">💕 Favorite Memory</div>
+                    </div>
+                    <div class="flex items-center justify-between w-full timeline-item">
+                        <div class="w-5/12 text-right pr-4 font-bold">💕 Today</div>
+                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white"></div>
+                        <div class="w-5/12 glass-card p-3 pl-4 text-xs md:text-sm font-bold">Taking the ultimate leap of faith...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="proposal">
+            <div class="glass-card p-8 md:p-16 max-w-2xl text-center z-30 mx-4 relative shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
+                <div class="mb-10 min-h-32 flex flex-col justify-center items-center">
+                    <p id="type-line-1" class="text-xl md:text-2xl font-bold italic"></p>
+                    <p id="type-line-2" class="text-3xl md:text-5xl font-serif-lux font-bold mt-4 tracking-wide"></p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6 opacity-0 id-buttons-tray">
+                    <button onclick="triggerGrandCelebration()" class="btn-premium font-bold py-4 px-12 rounded-full text-xl cursor-pointer tracking-wider active:scale-95">
+                        ❤️ YES, FOREVER
+                    </button>
+                    <button onclick="triggerGrandCelebration()" class="btn-premium font-bold py-4 px-12 rounded-full text-xl cursor-pointer tracking-wider active:scale-95">
+                        💖 ABSOLUTELY YES
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div id="celebration-screen" class="fixed inset-0 bg-gradient-to-br from-[#FFF5F7] to-[#FFD1DC] z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-700">
+            <div class="text-center p-10 max-w-xl glass-card border-black/20 scale-75 transform transition-transform duration-700" id="celebration-inner-card">
+                <h2 class="text-5xl md:text-7xl font-handwritten font-bold mb-6 drop-shadow-sm">You made my heart complete! ❤️</h2>
+                <p class="text-lg md:text-xl font-bold tracking-widest uppercase">
+                    Our Forever Chapter Starts Today ✨
+                </p>
+                <div class="mt-8 text-4xl animate-bounce">💍✨🥂</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. System Setup & Load Managers ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 1500);
+        });
+
+        // Music Control Functions
+        const music = document.getElementById('bg-music');
+        function toggleMusic() {
+            if (music.paused) {
+                music.play().catch(e => console.log("Audio play requires interaction first"));
+                document.getElementById('music-icon').innerText = '⏸️';
+            } else {
+                music.pause();
+                document.getElementById('music-icon').innerText = '🎵';
+            }
+        }
+
+
+        // --- 2. Three.js Procedural 3D Valentine's World ---
+        const container = document.getElementById('three-container');
+        const scene = new THREE.Scene();
+        
+        // Setup Camera with cinematic depth perspective
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 9);
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Premium Studio Lighting Environment
+        const mainAmbient = new THREE.AmbientLight(0xfff5f7, 0.9);
+        scene.add(mainAmbient);
+
+        const warmSpotlight = new THREE.DirectionalLight(0xff4d8d, 1.2);
+        warmSpotlight.position.set(4, 8, 5);
+        scene.add(warmSpotlight);
+
+        const softFillLight = new THREE.PointLight(0xff1744, 1.5, 20);
+        softFillLight.position.set(0, -2, 4);
+        scene.add(softFillLight);
+
+        // 3D Procedural Character Builder (Pixar Chibi Style)
+        function generateLoveCharacter(xPos, skinColor) {
+            const charGroup = new THREE.Group();
+            
+            // Ultra-smooth materials matching premium 3D animations
+            const skinMat = new THREE.MeshToonMaterial({ color: skinColor, roughness: 0.15, metalness: 0.05 });
+            const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+            const cheekMat = new THREE.MeshBasicMaterial({ color: 0xff4d8d, transparent: true, opacity: 0.7 });
+
+            // Smooth Round Body/Head Unit
+            const coreGeo = new THREE.SphereGeometry(0.9, 64, 64);
+            coreGeo.scale(1, 1.15, 1);
+            const coreMesh = new THREE.Mesh(coreGeo, skinMat);
+            charGroup.add(coreMesh);
+
+            // Large Expressive Eyes
+            const eyeGeo = new THREE.SphereGeometry(0.09, 32, 32);
+            const leftEye = new THREE.Mesh(eyeGeo, eyeMat); leftEye.position.set(-0.25, 0.25, 0.8);
+            const rightEye = new THREE.Mesh(eyeGeo, eyeMat); rightEye.position.set(0.25, 0.25, 0.8);
+            charGroup.add(leftEye, rightEye);
+
+            // Rosy Blush Cheeks
+            const blushGeo = new THREE.SphereGeometry(0.14, 32, 32); blushGeo.scale(1, 0.5, 0.2);
+            const leftBlush = new THREE.Mesh(blushGeo, cheekMat); leftBlush.position.set(-0.5, 0.05, 0.78);
+            const rightBlush = new THREE.Mesh(blushGeo, cheekMat); rightBlush.position.set(0.5, 0.05, 0.78);
+            charGroup.add(leftBlush, rightBlush);
+
+            // Cute Chibi Arms & Legs
+            const limbGeo = new THREE.SphereGeometry(0.2, 32, 32);
+            const lArm = new THREE.Mesh(limbGeo, skinMat); lArm.position.set(-0.9, -0.1, 0);
+            const rArm = new THREE.Mesh(limbGeo, skinMat); rArm.position.set(0.9, -0.1, 0);
+            const lLeg = new THREE.Mesh(limbGeo, skinMat); lLeg.position.set(-0.35, -1.1, 0);
+            const rLeg = new THREE.Mesh(limbGeo, skinMat); rLeg.position.set(0.35, -1.1, 0);
+            charGroup.add(lArm, rArm, lLeg, rLeg);
+
+            charGroup.position.set(xPos, -0.6, 0);
+            return { mesh: charGroup, leftArm: lArm, rightArm: rArm, leftLeg: lLeg, rightLeg: rLeg };
+        }
+
+        const characterLeft = generateLoveCharacter(-3.2, 0xffffff);
+        const characterRight = generateLoveCharacter(3.2, 0xfffafb);
+        scene.add(characterLeft.mesh, characterRight.mesh);
+
+        // Turn characters inward towards each other
+        characterLeft.mesh.rotation.y = 0.5;
+        characterRight.mesh.rotation.y = -0.5;
+
+        // Custom Extruded Heart Geometry Function
+        function drawHeartMesh(color, size) {
+            const hShape = new THREE.Shape();
+            hShape.moveTo(0, 0);
+            hShape.bezierCurveTo(0, 0.5, 0.5, 1, 1, 1);
+            hShape.bezierCurveTo(1.8, 1, 1.8, 0, 1.8, -0.5);
+            hShape.bezierCurveTo(1.8, -1.2, 1, -1.7, 0, -2.5);
+            hShape.bezierCurveTo(-1, -1.7, -1.8, -1.2, -1.8, -0.5);
+            hShape.bezierCurveTo(-1.8, 0, -1.8, 1, -1, 1);
+            hShape.bezierCurveTo(-0.5, 1, 0, 0.5, 0, 0);
+
+            const exSettings = { depth: 0.3, bevelEnabled: true, bevelSegments: 6, steps: 1, bevelSize: 0.15, bevelThickness: 0.15 };
+            const geometry = new THREE.ExtrudeGeometry(hShape, exSettings);
+            const material = new THREE.MeshToonMaterial({ color: color, roughness: 0.1 });
+            const heartMesh = new THREE.Mesh(geometry, material);
+            heartMesh.scale.set(size, size, size);
+            heartMesh.rotation.z = Math.PI; // Invert to upright position
+            return heartMesh;
+        }
+
+        // Giant Proposal Center Heart
+        const centralGiantHeart = drawHeartMesh(0xff1744, 0.7);
+        centralGiantHeart.position.set(0, 1.6, -1);
+        centralGiantHeart.scale.set(0,0,0); // initially hidden
+        scene.add(centralGiantHeart);
+
+        // Drifting Rose Petals & Sparkling Particles System
+        const particleCount = 120;
+        const particleGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const speeds = [];
+
+        for(let i = 0; i < particleCount * 3; i+=3) {
+            positions[i] = (Math.random() - 0.5) * 15;
+            positions[i+1] = Math.random() * 12 - 6;
+            positions[i+2] = (Math.random() - 0.5) * 10;
+            speeds.push({
+                x: (Math.random() - 0.5) * 0.02,
+                y: (Math.random() * 0.02) + 0.01,
+                rot: Math.random() * 0.05
+            });
+        }
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        const pMaterial = new THREE.PointsMaterial({ size: 0.15, color: 0xff4d8d, transparent: true, opacity: 0.8 });
+        const particleSystem = new THREE.Points(particleGeometry, pMaterial);
+        scene.add(particleSystem);
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+
+        // --- 3. GSAP Parallax & Convergence Controller ---
+        gsap.registerPlugin(ScrollTrigger);
+        const mainScroller = document.querySelector(".scroll-container");
+
+        // Character convergence timeline triggered on scrolling down
+        let loveTimeline = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#proposal",
+                scroller: mainScroller,
+                start: "top bottom",
+                end: "top top",
+                scrub: 1.2,
+                onEnter: () => activateProposalText()
+            }
+        });
+
+        loveTimeline.to(characterLeft.mesh.position, { x: -0.45, y: -0.5, z: 2 }, 0)
+                    .to(characterRight.mesh.position, { x: 0.45, y: -0.5, z: 2 }, 0)
+                    .to(centralGiantHeart.scale, { x: 0.75, y: 0.75, z: 0.75 }, 0.3)
+                    .to(centralGiantHeart.position, { y: 1.5, z: 1 }, 0.3);
+
+        // Individual section triggers for visual cards stagger load
+        gsap.from("#memories .glass-card", {
+            scrollTrigger: { trigger: "#memories", scroller: mainScroller, start: "top center" },
+            y: 80, opacity: 0, stagger: 0.2, duration: 0.8, ease: "power2.out"
+        });
+
+        gsap.from(".heart-card", {
+            scrollTrigger: { trigger: "#reasons", scroller: mainScroller, start: "top center" },
+            scale: 0, opacity: 0, stagger: 0.15, duration: 0.7, ease: "back.out(1.5)"
+        });
+
+        gsap.from(".timeline-item", {
+            scrollTrigger: { trigger: "#timeline", scroller: mainScroller, start: "top center" },
+            x: (i) => i % 2 === 0 ? -100 : 100, opacity: 0, stagger: 0.2, duration: 0.8
+        });
+
+
+        // --- 4. Frame Renderer Loop ---
+        const clock = new THREE.Clock();
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            const elapsed = clock.getElapsedTime();
+
+            // Heartbeat scale oscillation applied to Central Heart
+            const pulseFactor = 1 + Math.sin(elapsed * 4.5) * 0.04;
+            if(centralGiantHeart.scale.x > 0) {
+                centralGiantHeart.scale.set(0.75 * pulseFactor, 0.75 * pulseFactor, 0.75 * pulseFactor);
+            }
+
+            // Animate rose/sparkle particle array positions down screen
+            const coords = particleGeometry.attributes.position.array;
+            let speedIndex = 0;
+            for(let i = 1; i < coords.length; i+=3) {
+                coords[i] -= speeds[speedIndex].y; 
+                coords[i-1] += Math.sin(elapsed + i) * 0.005; 
+                if(coords[i] < -6) { 
+                    coords[i] = 6;
+                }
+                speedIndex++;
+            }
+            particleGeometry.attributes.position.needsUpdate = true;
+
+            // Chibi limbs idle dance loop if active container scrolling
+            if (mainScroller.scrollTop > 20) {
+                const dance = Math.sin(elapsed * 7) * 0.25;
+                characterLeft.leftLeg.rotation.x = dance;
+                characterLeft.rightLeg.rotation.x = -dance;
+                characterRight.leftLeg.rotation.x = -dance;
+                characterRight.rightLeg.rotation.x = dance;
+            }
+
+            renderer.render(scene, camera);
+        }
+        renderLoop();
+
+
+        // --- 5. Interactive UI Details & Typewriter Text System ---
+        // 3D Glass Card Mouse Tilt Logic
+        document.querySelectorAll('.dynamic-tilt').forEach(element => {
+            element.addEventListener('mousemove', (e) => {
+                const box = element.getBoundingClientRect();
+                const horizontal = e.clientX - box.left - (box.width / 2);
+                const vertical = e.clientY - box.top - (box.height / 2);
+                gsap.to(element, { rotationY: horizontal * 0.15, rotationX: -vertical * 0.15, transformPerspective: 700, ease: "power1.out" });
+            });
+            element.addEventListener('mouseleave', () => {
+                gsap.to(element, { rotationY: 0, rotationX: 0, ease: "power1.out" });
+            });
+        });
+
+        // Safe Trigger for Typewriter sequence
+        let typedLock = false;
+        function activateProposalText() {
+            if (typedLock) return;
+            typedLock = true;
+
+            const textBlock1 = "You are my favorite chapter, my happiest memory, my greatest blessing...";
+            const textBlock2 = "Will You Be Mine Forever? ❤️";
+
+            typeWriterAnimation("type-line-1", textBlock1, 45, () => {
+                setTimeout(() => {
+                    typeWriterAnimation("type-line-2", textBlock2, 55, () => {
+                        gsap.to(".id-buttons-tray", { opacity: 1, y: -10, duration: 0.6, ease: "power2.out" });
+                    });
+                }, 500);
+            });
+        }
+
+        function typeWriterAnimation(targetId, textString, interval, callback) {
+            let index = 0;
+            const element = document.getElementById(targetId);
+            function run() {
+                if (index < textString.length) {
+                    element.innerHTML += textString.charAt(index);
+                    index++;
+                    setTimeout(run, interval);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            run();
+        }
+
+        // --- 6. Live Interactive Canvas Cursor Heart Trail ---
+        const cursorCanvas = document.getElementById('cursor-canvas');
+        const ctx = cursorCanvas.getContext('2d');
+        let trailArr = [];
+
+        function resizeCursorCanvas() {
+            cursorCanvas.width = window.innerWidth;
+            cursorCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCursorCanvas);
+        resizeCursorCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            if(Math.random() < 0.25) { 
+                trailArr.push({ x: e.clientX, y: e.clientY, size: Math.random() * 12 + 8, alpha: 1, speedX: (Math.random() - 0.5) * 1.5, speedY: -Math.random() * 1 });
+            }
+        });
+
+        function handleTrail() {
+            ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+            for (let i = 0; i < trailArr.length; i++) {
+                let p = trailArr[i];
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.font = `${p.size}px serif`;
+                ctx.fillText('❤️', p.x, p.y);
+                ctx.restore();
+                
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.alpha -= 0.02;
+
+                if (p.alpha <= 0) {
+                    trailArr.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(handleTrail);
+        }
+        handleTrail();
+
+
+        // --- 7. Celebration Grand Finale Sequence ---
+        function triggerGrandCelebration() {
+            const screen = document.getElementById('celebration-screen');
+            const innerCard = document.getElementById('celebration-inner-card');
+            screen.classList.remove('opacity-0', 'pointer-events-none');
+            innerCard.classList.remove('scale-75');
+            innerCard.classList.add('scale-100');
+
+            // Set character meshes to massive excited jump loops
+            gsap.to(characterLeft.mesh.position, { y: 0.3, duration: 0.25, yoyo: true, repeat: -1 });
+            gsap.to(characterRight.mesh.position, { y: 0.3, duration: 0.25, yoyo: true, repeat: -1, delay: 0.12 });
+            gsap.to(centralGiantHeart.scale, { x: 1.4, y: 1.4, z: 1.4, duration: 0.5, yoyo: true, repeat: -1 });
+
+            // Firework and Confetti Engine Trigger
+            const runtime = 12 * 1000;
+            const expiry = Date.now() + runtime;
+
+            (function frameGenerator() {
+                confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF1744', '#FF4D8D', '#ffffff'] });
+                confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF1744', '#FF4D8D', '#ffffff'] });
+
+                if (Date.now() < expiry) {
+                    requestAnimationFrame(frameGenerator);
+                }
+            }());
+        }
+    </script>
+</body>
+</html>
