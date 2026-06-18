@@ -17,10 +17,10 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #7A0016 0%, #FF1744 35%, #FF4D8D 70%, #FFF5F7 100%);
-            --glass: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --rose-glow: 0 0 30px rgba(255, 23, 68, 0.8);
-            --pink-glow: 0 0 30px rgba(255, 77, 141, 0.7);
+            --glass: rgba(255, 255, 255, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --rose-glow: 0 0 35px rgba(255, 23, 68, 0.85);
+            --pink-glow: 0 0 35px rgba(255, 77, 141, 0.75);
         }
 
         body, html {
@@ -28,17 +28,22 @@
             padding: 0;
             font-family: 'Poppins', sans-serif;
             background: var(--bg-gradient);
-            color: #000000; /* Modified text color to black globally */
+            color: #000000;
             overflow-x: hidden;
             scroll-behavior: smooth;
         }
 
-        /* Enforce absolute black text on thematic typography overrides */
+        /* Prevent text overlapping globally across all layouts */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            line-height: 1.6 !important;
+            word-wrap: break-word;
+        }
+
         .font-serif-lux { font-family: 'Playfair Display', serif; color: #000000 !important; }
         .font-handwritten { font-family: 'Caveat', cursive; color: #000000 !important; }
         h1, h2, h3, p, span, div, button { color: #000000 !important; }
 
-        /* Fullscreen fixed 3D Canvas environment */
         #three-container {
             position: fixed;
             top: 0;
@@ -49,7 +54,6 @@
             pointer-events: none;
         }
 
-        /* Screen-wide interactive cursor trail space */
         #cursor-canvas {
             position: fixed;
             top: 0;
@@ -60,7 +64,6 @@
             pointer-events: none;
         }
 
-        /* Custom Loading Screen Overlay */
         #loader {
             position: fixed;
             inset: 0;
@@ -83,7 +86,6 @@
             100% { transform: scale(1.15); filter: drop-shadow(0 0 25px rgba(255,77,141,0.8)); }
         }
 
-        /* Dynamic background pulse matching a simulated heartbeat */
         .heartbeat-bg-pulse {
             animation: ambient-pulse 3s infinite ease-in-out;
         }
@@ -92,7 +94,6 @@
             50% { opacity: 1; filter: saturate(1.1) brightness(1.05); }
         }
 
-        /* Snap Scrolling Interface Container */
         .scroll-container {
             position: relative;
             z-index: 20;
@@ -104,71 +105,70 @@
         .scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
 
         section {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             scroll-snap-align: start;
-            padding: 2rem;
+            padding: 4rem 2rem;
             box-sizing: border-box;
         }
 
-        /* Glassmorphic Luxury Design Language */
         .glass-card {
-            background: rgba(255, 255, 255, 0.45); /* Enhanced contrast opacity for black text visibility */
+            background: var(--glass);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid var(--glass-border);
             border-radius: 32px;
-            box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 45px 0 rgba(0, 0, 0, 0.18);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.9);
             box-shadow: var(--rose-glow);
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.65);
         }
 
-        /* Heart Card Shapes for Reasons */
         .heart-card {
             position: relative;
-            width: 190px;
-            height: 190px;
-            background: rgba(255, 255, 255, 0.5); /* Enhanced interior contrast for solid black text */
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            width: 210px;
+            height: 210px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             transform: rotate(-45deg);
-            margin: 45px;
+            margin: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px 12px 0 0;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
         .heart-card::before, .heart-card::after {
             content: "";
             position: absolute;
-            width: 190px;
-            height: 190px;
+            width: 210px;
+            height: 210px;
             background: inherit;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        .heart-card::before { top: -95px; left: 0; border-bottom: none; }
-        .heart-card::after { left: 95px; top: 0; border-left: none; }
+        .heart-card::before { top: -105px; left: 0; border-bottom: none; }
+        .heart-card::after { left: 105px; top: 0; border-left: none; }
+        
         .heart-content {
             transform: rotate(45deg);
             z-index: 5;
             text-align: center;
-            padding: 12px;
+            padding: 16px;
+            width: 100%;
         }
 
-        /* Premium Buttons */
         .btn-premium {
             background: linear-gradient(45deg, #ffffff, #ffe4ec);
-            border: 2px solid rgba(0, 0, 0, 0.8);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(0, 0, 0, 0.85);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             transition: all 0.3s ease;
         }
         .btn-premium:hover {
@@ -177,13 +177,12 @@
             background: linear-gradient(45deg, #ffe4ec, #ffffff);
         }
 
-        /* Music Floating Control */
         .music-toggle {
             position: fixed;
             top: 25px;
             right: 25px;
             z-index: 50;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(0, 0, 0, 0.2);
             width: 45px;
@@ -215,11 +214,11 @@
     <div class="scroll-container">
         
         <section id="welcome">
-            <div class="text-center z-30 max-w-4xl px-4 glass-card p-10 md:p-16">
-                <span class="uppercase tracking-widest text-sm font-semibold mb-4 block opacity-80">Welcome to Our Universe</span>
-                <h1 class="text-4xl md:text-7xl font-serif-lux font-bold mb-6 drop-shadow-md leading-tight">
+            <div class="text-center z-30 max-w-4xl px-6 md:px-12 py-12 md:py-20 glass-card">
+                <span class="uppercase tracking-widest text-xs md:text-sm font-bold mb-6 block opacity-80">Welcome to Our Universe</span>
+                <h1 class="text-4xl md:text-7xl font-serif-lux font-bold drop-shadow-md leading-tight">
                     Every heartbeat of mine<br>
-                    <span class="italic font-normal">whispers your name</span> ❤️
+                    <span class="italic font-normal block mt-4">whispers your name</span> ❤️
                 </h1>
             </div>
             <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-black/70 text-xs tracking-widest uppercase font-bold animate-bounce">
@@ -228,99 +227,99 @@
         </section>
 
         <section id="meeting">
-            <div class="glass-card p-8 md:p-14 max-w-2xl text-center z-30 mx-4">
-                <h2 class="text-2xl md:text-4xl font-serif-lux font-bold mb-4">Our First Meeting</h2>
-                <p class="text-xl md:text-2xl font-handwritten leading-relaxed font-bold">
+            <div class="glass-card p-10 md:p-16 max-w-3xl text-center z-30 mx-4">
+                <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-8">Our First Meeting</h2>
+                <p class="text-2xl md:text-3xl font-handwritten leading-relaxed font-bold">
                     "The moment I met you, my world became brighter. Every color changed, every ordinary sight found its magic, and I finally understood why everything before you was just waiting."
                 </p>
             </div>
         </section>
 
-        <section id="memories" class="flex-col justify-center">
-            <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-12 text-center z-30 drop-shadow-sm">Beautiful Memories</h2>
-            <div class="flex flex-wrap justify-center gap-8 z-30 max-w-6xl w-full px-4">
-                <div class="glass-card p-5 w-72 transform dynamic-tilt group">
-                    <div class="w-full h-48 bg-rose-500/20 rounded-2xl mb-4 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
+        <section id="memories" class="flex-col justify-center gap-12">
+            <h2 class="text-4xl md:text-6xl font-serif-lux font-bold text-center z-30 drop-shadow-sm">Beautiful Memories</h2>
+            <div class="flex flex-wrap justify-center gap-10 z-30 max-w-6xl w-full px-4">
+                <div class="glass-card p-6 w-80 transform dynamic-tilt group">
+                    <div class="w-full h-52 bg-rose-500/20 rounded-2xl mb-6 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
                         🌹 <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent"></div>
                     </div>
-                    <h3 class="font-bold font-serif-lux text-xl mb-1">The First Spark</h3>
-                    <p class="text-sm font-handwritten text-lg font-bold">Where a single smile forever redefined happiness for me.</p>
+                    <h3 class="font-bold font-serif-lux text-2xl mb-3">The First Spark</h3>
+                    <p class="text-base font-handwritten text-xl font-bold">Where a single smile forever redefined happiness for me.</p>
                 </div>
-                <div class="glass-card p-5 w-72 transform dynamic-tilt group">
-                    <div class="w-full h-48 bg-rose-500/20 rounded-2xl mb-4 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
+                <div class="glass-card p-6 w-80 transform dynamic-tilt group">
+                    <div class="w-full h-52 bg-rose-500/20 rounded-2xl mb-6 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
                         ✨ <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent"></div>
                     </div>
-                    <h3 class="font-bold font-serif-lux text-xl mb-1">Endless Conversations</h3>
-                    <p class="text-sm font-handwritten text-lg font-bold">Midnight stories, sharing secrets, and realizing you are home.</p>
+                    <h3 class="font-bold font-serif-lux text-2xl mb-3">Endless Conversations</h3>
+                    <p class="text-base font-handwritten text-xl font-bold">Midnight stories, sharing secrets, and realizing you are home.</p>
                 </div>
-                <div class="glass-card p-5 w-72 transform dynamic-tilt group">
-                    <div class="w-full h-48 bg-rose-500/20 rounded-2xl mb-4 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
+                <div class="glass-card p-6 w-80 transform dynamic-tilt group">
+                    <div class="w-full h-52 bg-rose-500/20 rounded-2xl mb-6 flex items-center justify-center border border-black/10 text-5xl relative overflow-hidden">
                         💫 <div class="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent"></div>
                     </div>
-                    <h3 class="font-bold font-serif-lux text-xl mb-1">Our Safe Space</h3>
-                    <p class="text-sm font-handwritten text-lg font-bold">Every laugh shared made me love you a million times more.</p>
+                    <h3 class="font-bold font-serif-lux text-2xl mb-3">Our Safe Space</h3>
+                    <p class="text-base font-handwritten text-xl font-bold">Every laugh shared made me love you a million times more.</p>
                 </div>
             </div>
         </section>
 
-        <section id="reasons" class="h-auto py-28 flex-col justify-start overflow-visible">
-            <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-28 text-center z-30 sticky top-12">Why I Love You</h2>
-            <div class="flex flex-wrap justify-center max-w-5xl z-30 gap-y-24 gap-x-12 px-4">
-                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your radiant, heartwarming smile</div></div>
-                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your infinite kindness to everyone</div></div>
-                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your infectious, magical laughter</div></div>
-                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your unyielding belief and support</div></div>
-                <div class="heart-card"><div class="heart-content font-handwritten text-xl font-bold">Your beautiful, luminous soul</div></div>
+        <section id="reasons" class="h-auto py-36 flex-col justify-start overflow-visible">
+            <h2 class="text-4xl md:text-6xl font-serif-lux font-bold mb-36 text-center z-30 sticky top-12">Why I Love You</h2>
+            <div class="flex flex-wrap justify-center max-w-6xl z-30 gap-y-28 gap-x-16 px-4">
+                <div class="heart-card"><div class="heart-content font-handwritten text-2xl font-bold">Your radiant, heartwarming smile</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-2xl font-bold">Your infinite kindness to everyone</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-2xl font-bold">Your infectious, magical laughter</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-2xl font-bold">Your unyielding belief and support</div></div>
+                <div class="heart-card"><div class="heart-content font-handwritten text-2xl font-bold">Your beautiful, luminous soul</div></div>
             </div>
         </section>
 
-        <section id="timeline" class="flex-col justify-center">
-            <h2 class="text-3xl md:text-5xl font-serif-lux font-bold mb-16 text-center z-30">Our Timeline</h2>
-            <div class="relative w-full max-w-xl z-30 px-4">
+        <section id="timeline" class="flex-col justify-center gap-16">
+            <h2 class="text-4xl md:text-6xl font-serif-lux font-bold text-center z-30">Our Timeline</h2>
+            <div class="relative w-full max-w-2xl z-30 px-4">
                 <div class="absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-black via-rose-500 to-black shadow-[0_0_8px_rgba(0,0,0,0.3)]"></div>
                 
-                <div class="space-y-10">
+                <div class="space-y-14">
                     <div class="flex items-center justify-between w-full timeline-item">
-                        <div class="w-5/12 text-right pr-4 font-bold">💕 First Meeting</div>
-                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white"></div>
-                        <div class="w-5/12 glass-card p-3 pl-4 text-xs md:text-sm font-medium">Our eyes locked for the very first time.</div>
+                        <div class="w-5/12 text-right pr-6 font-bold text-lg md:text-xl">💕 First Meeting</div>
+                        <div class="z-20 flex items-center bg-black w-6 h-6 rounded-full border-4 border-white"></div>
+                        <div class="w-5/12 glass-card p-5 pl-6 text-sm md:text-base font-semibold">Our eyes locked for the very first time.</div>
                     </div>
                     <div class="flex items-center justify-between w-full timeline-item">
-                        <div class="w-5/12 glass-card p-3 pr-4 text-right text-xs md:text-sm font-medium order-1 md:order-none">We talked for hours without stopping.</div>
-                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white order-2"></div>
-                        <div class="w-5/12 pl-4 font-bold order-3 md:order-none">💕 First Conversation</div>
+                        <div class="w-5/12 glass-card p-5 pr-6 text-right text-sm md:text-base font-semibold order-1 md:order-none">We talked for hours without stopping.</div>
+                        <div class="z-20 flex items-center bg-black w-6 h-6 rounded-full border-4 border-white order-2"></div>
+                        <div class="w-5/12 pl-6 font-bold text-lg md:text-xl order-3 md:order-none">💕 First Conversation</div>
                     </div>
                     <div class="flex items-center justify-between w-full timeline-item">
-                        <div class="w-5/12 text-right pr-4 font-bold">💕 First Date</div>
-                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white"></div>
-                        <div class="w-5/12 glass-card p-3 pl-4 text-xs md:text-sm font-medium">When I realized you were completely special.</div>
+                        <div class="w-5/12 text-right pr-6 font-bold text-lg md:text-xl">💕 First Date</div>
+                        <div class="z-20 flex items-center bg-black w-6 h-6 rounded-full border-4 border-white"></div>
+                        <div class="w-5/12 glass-card p-5 pl-6 text-sm md:text-base font-semibold">When I realized you were completely special.</div>
                     </div>
                     <div class="flex items-center justify-between w-full timeline-item">
-                        <div class="w-5/12 glass-card p-3 pr-4 text-right text-xs md:text-sm font-medium order-1 md:order-none">Uncontrollable laughter under the stars.</div>
-                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white order-2"></div>
-                        <div class="w-5/12 pl-4 font-bold order-3 md:order-none">💕 Favorite Memory</div>
+                        <div class="w-5/12 glass-card p-5 pr-6 text-right text-sm md:text-base font-semibold order-1 md:order-none">Uncontrollable laughter under the stars.</div>
+                        <div class="z-20 flex items-center bg-black w-6 h-6 rounded-full border-4 border-white order-2"></div>
+                        <div class="w-5/12 pl-6 font-bold text-lg md:text-xl order-3 md:order-none">💕 Favorite Memory</div>
                     </div>
                     <div class="flex items-center justify-between w-full timeline-item">
-                        <div class="w-5/12 text-right pr-4 font-bold">💕 Today</div>
-                        <div class="z-20 flex items-center bg-black w-5 h-5 rounded-full border-4 border-white"></div>
-                        <div class="w-5/12 glass-card p-3 pl-4 text-xs md:text-sm font-bold">Taking the ultimate leap of faith...</div>
+                        <div class="w-5/12 text-right pr-6 font-bold text-lg md:text-xl">💕 Today</div>
+                        <div class="z-20 flex items-center bg-black w-6 h-6 rounded-full border-4 border-white"></div>
+                        <div class="w-5/12 glass-card p-5 pl-6 text-sm md:text-base font-bold">Taking the ultimate leap of faith...</div>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="proposal">
-            <div class="glass-card p-8 md:p-16 max-w-2xl text-center z-30 mx-4 relative shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
-                <div class="mb-10 min-h-32 flex flex-col justify-center items-center">
-                    <p id="type-line-1" class="text-xl md:text-2xl font-bold italic"></p>
-                    <p id="type-line-2" class="text-3xl md:text-5xl font-serif-lux font-bold mt-4 tracking-wide"></p>
+            <div class="glass-card p-10 md:p-20 max-w-3xl text-center z-30 mx-4 relative shadow-[0_25px_60px_rgba(0,0,0,0.18)]">
+                <div class="mb-14 min-h-40 flex flex-col justify-center items-center">
+                    <p id="type-line-1" class="text-xl md:text-3xl font-bold italic tracking-wide mb-4"></p>
+                    <p id="type-line-2" class="text-4xl md:text-6xl font-serif-lux font-bold tracking-wide leading-snug"></p>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-6 opacity-0 id-buttons-tray">
-                    <button onclick="triggerGrandCelebration()" class="btn-premium font-bold py-4 px-12 rounded-full text-xl cursor-pointer tracking-wider active:scale-95">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-8 opacity-0 id-buttons-tray">
+                    <button onclick="triggerGrandCelebration()" class="btn-premium font-bold py-5 px-14 rounded-full text-2xl cursor-pointer tracking-wider active:scale-95">
                         ❤️ YES, FOREVER
                     </button>
-                    <button onclick="triggerGrandCelebration()" class="btn-premium font-bold py-4 px-12 rounded-full text-xl cursor-pointer tracking-wider active:scale-95">
+                    <button onclick="triggerGrandCelebration()" class="btn-premium font-bold py-5 px-14 rounded-full text-2xl cursor-pointer tracking-wider active:scale-95">
                         💖 ABSOLUTELY YES
                     </button>
                 </div>
@@ -328,12 +327,12 @@
         </section>
 
         <div id="celebration-screen" class="fixed inset-0 bg-gradient-to-br from-[#FFF5F7] to-[#FFD1DC] z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-700">
-            <div class="text-center p-10 max-w-xl glass-card border-black/20 scale-75 transform transition-transform duration-700" id="celebration-inner-card">
-                <h2 class="text-5xl md:text-7xl font-handwritten font-bold mb-6 drop-shadow-sm">You made my heart complete! ❤️</h2>
-                <p class="text-lg md:text-xl font-bold tracking-widest uppercase">
+            <div class="text-center p-12 md:p-20 max-w-2xl glass-card border-black/20 scale-75 transform transition-transform duration-700" id="celebration-inner-card">
+                <h2 class="text-5xl md:text-8xl font-handwritten font-bold mb-8 drop-shadow-sm leading-tight">You made my heart complete! ❤️</h2>
+                <p class="text-xl md:text-2xl font-bold tracking-widest uppercase opacity-90">
                     Our Forever Chapter Starts Today ✨
                 </p>
-                <div class="mt-8 text-4xl animate-bounce">💍✨🥂</div>
+                <div class="mt-10 text-5xl animate-bounce">💍✨🥂</div>
             </div>
         </div>
 
@@ -366,7 +365,6 @@
         const container = document.getElementById('three-container');
         const scene = new THREE.Scene();
         
-        // Setup Camera with cinematic depth perspective
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 9);
 
@@ -375,7 +373,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
-        // Premium Studio Lighting Environment
         const mainAmbient = new THREE.AmbientLight(0xfff5f7, 0.9);
         scene.add(mainAmbient);
 
@@ -387,34 +384,28 @@
         softFillLight.position.set(0, -2, 4);
         scene.add(softFillLight);
 
-        // 3D Procedural Character Builder (Pixar Chibi Style)
         function generateLoveCharacter(xPos, skinColor) {
             const charGroup = new THREE.Group();
             
-            // Ultra-smooth materials matching premium 3D animations
             const skinMat = new THREE.MeshToonMaterial({ color: skinColor, roughness: 0.15, metalness: 0.05 });
             const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
             const cheekMat = new THREE.MeshBasicMaterial({ color: 0xff4d8d, transparent: true, opacity: 0.7 });
 
-            // Smooth Round Body/Head Unit
             const coreGeo = new THREE.SphereGeometry(0.9, 64, 64);
             coreGeo.scale(1, 1.15, 1);
             const coreMesh = new THREE.Mesh(coreGeo, skinMat);
             charGroup.add(coreMesh);
 
-            // Large Expressive Eyes
             const eyeGeo = new THREE.SphereGeometry(0.09, 32, 32);
             const leftEye = new THREE.Mesh(eyeGeo, eyeMat); leftEye.position.set(-0.25, 0.25, 0.8);
             const rightEye = new THREE.Mesh(eyeGeo, eyeMat); rightEye.position.set(0.25, 0.25, 0.8);
             charGroup.add(leftEye, rightEye);
 
-            // Rosy Blush Cheeks
             const blushGeo = new THREE.SphereGeometry(0.14, 32, 32); blushGeo.scale(1, 0.5, 0.2);
             const leftBlush = new THREE.Mesh(blushGeo, cheekMat); leftBlush.position.set(-0.5, 0.05, 0.78);
             const rightBlush = new THREE.Mesh(blushGeo, cheekMat); rightBlush.position.set(0.5, 0.05, 0.78);
             charGroup.add(leftBlush, rightBlush);
 
-            // Cute Chibi Arms & Legs
             const limbGeo = new THREE.SphereGeometry(0.2, 32, 32);
             const lArm = new THREE.Mesh(limbGeo, skinMat); lArm.position.set(-0.9, -0.1, 0);
             const rArm = new THREE.Mesh(limbGeo, skinMat); rArm.position.set(0.9, -0.1, 0);
@@ -430,11 +421,9 @@
         const characterRight = generateLoveCharacter(3.2, 0xfffafb);
         scene.add(characterLeft.mesh, characterRight.mesh);
 
-        // Turn characters inward towards each other
         characterLeft.mesh.rotation.y = 0.5;
         characterRight.mesh.rotation.y = -0.5;
 
-        // Custom Extruded Heart Geometry Function
         function drawHeartMesh(color, size) {
             const hShape = new THREE.Shape();
             hShape.moveTo(0, 0);
@@ -450,17 +439,15 @@
             const material = new THREE.MeshToonMaterial({ color: color, roughness: 0.1 });
             const heartMesh = new THREE.Mesh(geometry, material);
             heartMesh.scale.set(size, size, size);
-            heartMesh.rotation.z = Math.PI; // Invert to upright position
+            heartMesh.rotation.z = Math.PI; 
             return heartMesh;
         }
 
-        // Giant Proposal Center Heart
         const centralGiantHeart = drawHeartMesh(0xff1744, 0.7);
         centralGiantHeart.position.set(0, 1.6, -1);
-        centralGiantHeart.scale.set(0,0,0); // initially hidden
+        centralGiantHeart.scale.set(0,0,0); 
         scene.add(centralGiantHeart);
 
-        // Drifting Rose Petals & Sparkling Particles System
         const particleCount = 120;
         const particleGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
@@ -493,7 +480,6 @@
         gsap.registerPlugin(ScrollTrigger);
         const mainScroller = document.querySelector(".scroll-container");
 
-        // Character convergence timeline triggered on scrolling down
         let loveTimeline = gsap.timeline({
             scrollTrigger: {
                 trigger: "#proposal",
@@ -510,7 +496,6 @@
                     .to(centralGiantHeart.scale, { x: 0.75, y: 0.75, z: 0.75 }, 0.3)
                     .to(centralGiantHeart.position, { y: 1.5, z: 1 }, 0.3);
 
-        // Individual section triggers for visual cards stagger load
         gsap.from("#memories .glass-card", {
             scrollTrigger: { trigger: "#memories", scroller: mainScroller, start: "top center" },
             y: 80, opacity: 0, stagger: 0.2, duration: 0.8, ease: "power2.out"
@@ -533,13 +518,11 @@
             requestAnimationFrame(renderLoop);
             const elapsed = clock.getElapsedTime();
 
-            // Heartbeat scale oscillation applied to Central Heart
             const pulseFactor = 1 + Math.sin(elapsed * 4.5) * 0.04;
             if(centralGiantHeart.scale.x > 0) {
                 centralGiantHeart.scale.set(0.75 * pulseFactor, 0.75 * pulseFactor, 0.75 * pulseFactor);
             }
 
-            // Animate rose/sparkle particle array positions down screen
             const coords = particleGeometry.attributes.position.array;
             let speedIndex = 0;
             for(let i = 1; i < coords.length; i+=3) {
@@ -552,7 +535,6 @@
             }
             particleGeometry.attributes.position.needsUpdate = true;
 
-            // Chibi limbs idle dance loop if active container scrolling
             if (mainScroller.scrollTop > 20) {
                 const dance = Math.sin(elapsed * 7) * 0.25;
                 characterLeft.leftLeg.rotation.x = dance;
@@ -567,7 +549,6 @@
 
 
         // --- 5. Interactive UI Details & Typewriter Text System ---
-        // 3D Glass Card Mouse Tilt Logic
         document.querySelectorAll('.dynamic-tilt').forEach(element => {
             element.addEventListener('mousemove', (e) => {
                 const box = element.getBoundingClientRect();
@@ -580,7 +561,6 @@
             });
         });
 
-        // Safe Trigger for Typewriter sequence
         let typedLock = false;
         function activateProposalText() {
             if (typedLock) return;
@@ -663,12 +643,10 @@
             innerCard.classList.remove('scale-75');
             innerCard.classList.add('scale-100');
 
-            // Set character meshes to massive excited jump loops
             gsap.to(characterLeft.mesh.position, { y: 0.3, duration: 0.25, yoyo: true, repeat: -1 });
             gsap.to(characterRight.mesh.position, { y: 0.3, duration: 0.25, yoyo: true, repeat: -1, delay: 0.12 });
             gsap.to(centralGiantHeart.scale, { x: 1.4, y: 1.4, z: 1.4, duration: 0.5, yoyo: true, repeat: -1 });
 
-            // Firework and Confetti Engine Trigger
             const runtime = 12 * 1000;
             const expiry = Date.now() + runtime;
 
